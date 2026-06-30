@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Oscar Health - IDP Coaching Scenario</title>
+    <style>
+        /* --- OSCAR HEALTH BRAND VARIABLES --- */
+        :root {
+            --oscar-primary: #4f50ff; /* Vibrant Blue */
+            --oscar-secondary: #cacaff; /* Light Blue/Purple */
+            --oscar-white: #ffffff;
+            --oscar-navy: #0b1c3c; /* Matched to logo for dark text */
+            --oscar-bg: #f4f5f9; /* Very soft cool gray for the page background */
+        }
+
+        body {
+            font-family: 'Segoe UI', Lettera LL, sans-serif;
+            background-color: var(--oscar-bg);
+            color: var(--oscar-navy);
+            line-height: 1.6;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        #scenario-container {
+            background: var(--oscar-white);
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(11, 28, 60, 0.08);
+            max-width: 800px;
+            width: 100%;
+            border-top: 8px solid var(--oscar-primary);
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        /* Logo Header */
+        .brand-header {
+            text-align: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--oscar-secondary);
+        }
+        
+        .brand-logo {
+            max-width: 140px;
+            height: auto;
+        }
+
+        h2 {
+            margin-top: 0;
+            color: var(--oscar-primary);
+            font-size: 1.4rem;
+            margin-bottom: 20px;
+        }
+
+        /* Layout for Character + Text */
+        .stage {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 25px;
+            align-items: flex-start;
+        }
+
+        #character-image {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid var(--oscar-secondary);
+            background-color: var(--oscar-bg);
+            flex-shrink: 0;
+        }
+
+        .text-content {
+            flex: 1;
+        }
+
+        .scene-text {
+            font-style: italic;
+            color: #555;
+            margin-bottom: 15px;
+            font-size: 0.95rem;
+        }
+
+        .dialogue {
+            font-weight: 500;
+            color: var(--oscar-navy);
+            padding: 15px 20px;
+            background-color: var(--oscar-secondary); 
+            border-radius: 0 12px 12px 12px; 
+            position: relative;
+        }
+
+        .choices-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        button {
+            background-color: var(--oscar-primary);
+            color: var(--oscar-white);
+            border: 2px solid transparent;
+            padding: 14px 18px;
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: left;
+            font-size: 1rem;
+            transition: all 0.2s ease-in-out;
+            box-shadow: 0 4px 6px rgba(79, 80, 255, 0.15);
+        }
+
+        button:hover {
+            background-color: var(--oscar-white);
+            color: var(--oscar-primary);
+            border: 2px solid var(--oscar-primary);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(79, 80, 255, 0.2);
+        }
+
+        button:hover .action-text {
+            color: var(--oscar-primary);
+        }
+
+        .action-text {
+            font-weight: 800;
+            display: block;
+            margin-bottom: 4px;
+            color: var(--oscar-secondary);
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 0.5px;
+        }
+
+        #debrief-section {
+            display: none;
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 2px dashed var(--oscar-secondary);
+        }
+
+        .restart-btn {
+            margin-top: 20px;
+            background-color: var(--oscar-navy);
+            text-align: center;
+        }
+        
+        .restart-btn:hover {
+            background-color: var(--oscar-secondary);
+            border-color: var(--oscar-navy);
+            color: var(--oscar-navy);
+        }
+    </style>
+</head>
+<body>
+
+<div id="scenario-container">
+    <div class="brand-header">
+        <img src="https://lh3.googleusercontent.com/d/18Z23MxaPhFy8M9I5oyN9pM5diAONKrCM" alt="Oscar Health Logo" class="brand-logo">
+    </div>
+
+    <h2 id="frame-title">Loading...</h2>
+    
+    <div class="stage">
+        <img id="character-image" src="" alt="Marcus">
+        <div class="text-content">
+            <div id="scene-text" class="scene-text"></div>
+            <div id="dialogue-text" class="dialogue"></div>
+        </div>
+    </div>
+
+    <div id="choices-container" class="choices-container"></div>
+    
+    <div id="debrief-section">
+        <h2>Simulation Debrief</h2>
+        <div id="debrief-text"></div>
+        <button class="restart-btn" onclick="startGame()">Restart Scenario</button>
+    </div>
+</div>
+
+<script>
+    // FULL STORYBOARD DATA (Expanded Content)
+    const storyData = {
+        start: {
+            title: "The Pre-Meeting Diagnostic",
+            image: "https://lh3.googleusercontent.com/d/1RBaq_EuTru7_h2Synj7lsJTPqbtvoflw", // Excited
+            scene: "You sit at your desk at Oscar Health, reviewing Marcus’s digital signature on his draft Individual Development Plan (IDP). He’s currently a Digital Marketing Specialist with a clear eye on moving into a Strategic Growth Manager role. Before sending the calendar invite for your 1:1, you run his draft through your 4-part IDP Diagnostic to plan your coaching approach. Which critical check does Marcus' current draft fail?",
+            dialogue: "Marcus wrote: 'I submitted my draft IDP! I’m really excited about it. I want to learn everything about Growth Marketing. I've planned to attend a 3-day summit in Las Vegas for $2,500 and take a 10-week online bootcamp.'",
+            choices: [
+                { action: "Choice A (The Development Check)", text: "You believe his goal of learning growth marketing and analytics lines up too closely with his daily performance metrics.", target: "frame2a" },
+                { action: "Choice B (The SMART Check)", text: "You decide the primary issue to address in the meeting is the lack of clear measurability in his phrasing 'learn everything'.", target: "frame2b" },
+                { action: "Choice C (The 3Es Check)", text: "You note that his plan relies 100% on formal education, completely omitting experience and exposure.", target: "frame2c" }
+            ]
+        },
+        frame2a: {
+            title: "The Flawed Focus on 'Is it Development?'",
+            image: "https://lh3.googleusercontent.com/d/1UXga5-5PuvbOUshiYoDgLAiZr-8zvyKP", // Annoyed/Defensive
+            scene: "You invite Marcus into the huddle room. You open the meeting by questioning whether his draft is actually focused on long-term development or if it's just a duplicate of his everyday work responsibilities.",
+            dialogue: "Marcus: (Frowns, looking defensive) 'With all due respect, learning growth marketing strategy and life-cycle analytics is completely distinct from my daily performance metrics. Right now, my day-to-day is mostly tactical operational execution, like drafting weekly social posts. Learning to build algorithmic growth funnels is a major step up.'",
+            choices: [
+                { action: "Choice A1 (The Budget Hammer)", text: "Double down by addressing the cost. 'Be that as it may, our budget for external training is incredibly tight this fiscal year. I can't approve a $2,500 conference or an expensive bootcamp. We need to find free online articles or books instead.'", target: "endA1" },
+                { action: "Choice A2 (The Hard Pivot)", text: "Pivot and acknowledge his point, but try to steer him toward internal learning opportunities instead. 'Fair point, Marcus. Let’s look at how we can get you that knowledge without spending money—maybe by working on active campaigns here?'", target: "endA2" }
+            ]
+        },
+        frame2b: {
+            title: "The Flawed Focus on wordsmithing 'SMART' Metrics",
+            image: "https://lh3.googleusercontent.com/d/1RBaq_EuTru7_h2Synj7lsJTPqbtvoflw", // Eager
+            scene: "You tell him that 'learning everything' is too vague to track[cite: 11]. Marcus nods, eager to please, and immediately starts typing on his laptop.",
+            dialogue: "Marcus: 'Oh, good catch. Yeah, 'everything' is a bit broad. Let me adjust the language right now. How about this: I will complete the Las Vegas summit and the 10-week bootcamp by the end of Q3 in order to master Growth Marketing analytics. There! Now it has a specific deadline.'",
+            choices: [
+                { action: "Choice B1 (The Quick Sign-off)", text: "Approve the revised draft since it now fits the technical compliance metrics of a SMART goal. 'Perfect. This looks structurally sound. I'll submit it to HR.'", target: "endB1" },
+                { action: "Choice B2 (The Delayed 3Es Pivot)", text: "Acknowledge the formatting fix, but try to transition the conversation to address the lack of practical application. 'Okay, this is measurable now. But we still need to talk about the actual learning methods you listed.'", target: "endB2" }
+            ]
+        },
+        frame2c: {
+            title: "The Core Framework Focus (The 3Es Path)",
+            image: "https://lh3.googleusercontent.com/d/1IQVoZ1A9P4tyIuku5GL331EtccVQw6x4", // Thinking
+            scene: "You meet with Marcus and lead with a collaborative framework reframe. You validate his long-term career ambition but shift the focus to how adult learning actually works.",
+            dialogue: "You: 'I love that you want to master growth marketing analytics, Marcus! While external courses are great, the strongest development happens when we apply what we learn directly to our daily work. If you attend that conference, how would you bring those skills back to benefit the team? And what is a real-life project we have coming up where you could practice these analytics skills firsthand?'",
+            choices: [
+                { action: "Choice C1 (The Hands-off Assignment)", text: "Task Marcus with designing his own practical projects to go alongside his goals. 'Take some time to brainstorm a few projects where you could learn as you go, and let's reconvene next week.'", target: "endC1" },
+                { action: "Choice C2 (The Structured Compromise)", text: "Propose a specific, cost-effective hybrid strategy that pairs foundational learning with immediate team collaboration.", target: "endC2" }
+            ]
+        },
+        endA1: {
+            title: "Compliance & Disengagement",
+            image: "https://lh3.googleusercontent.com/d/1-Pt9KlertMQZiVuEc1Q3fhEkRAOsSxFY", // Deflated
+            scene: "Marcus’s enthusiastic demeanor vanishes completely. He gives a tight, forced smile and slowly closes his laptop cover.",
+            dialogue: "Marcus: 'Oh. Okay. I guess I just won't do a development plan this year then.'",
+            result: "Marcus complies with your request to find free articles, but he does the bare minimum. He loses his passion for the strategic path, viewing the IDP as an empty box-checking exercise.",
+            debrief: "Learning growth marketing and analytics is distinct from his daily performance metrics (like drafting weekly social posts). Therefore, this is actually development. Try looking closely at the balance of how she plans to learn. While budget constraints are real, leading with a hard 'No' shuts down his motivation. Instead, validate his goal and ask questions that help him see how on-the-job experience is actually more effective."
+        },
+        endA2: {
+            title: "Clunky Recovery",
+            image: "https://lh3.googleusercontent.com/d/1-Pt9KlertMQZiVuEc1Q3fhEkRAOsSxFY", // Sighing
+            scene: "Marcus sighs softly, his initial high energy noticeably dampened, but he remains professional.",
+            dialogue: "Marcus: 'I guess I can look at the active campaigns and see if the team will let me look over their shoulders. I'll talk to them and see what's open.'",
+            result: "You manage to pivot back to internal learning, but leading with a hard barrier damaged his psychological safety. You will have to work twice as hard over the coming quarter to rebuild his trust.",
+            debrief: "Learning growth marketing and analytics is development because it is distinct from her daily performance metrics (like drafting weekly social posts). Try looking closely at the balance of how Marcus plans to learn. You correctly backpedaled to find internal opportunities, but leading with the budget hammer first damaged trust. Instead, validate his goal and ask questions that help him see how on-the-job experience is actually more effective."
+        },
+        endB1: {
+            title: "The Financial Wall",
+            image: "https://lh3.googleusercontent.com/d/16hiO68RoJXB6-N8fZIznG9tSzbKLNUEb", 
+            scene: "You wrap up the meeting with high-fives, and Marcus walks out happy. Two business days later, an automated notification from the Finance tracking tool lands in your inbox.",
+            dialogue: "Finance Email: 'IDP Budget Request Denied. Reason: Proposed expenditure of $2,500 for external conference exceeds allowable departmental limits.'",
+            result: "Because you focused entirely on the punctuation and metrics rather than the execution strategy, the plan is dead on arrival. You have to call Marcus back into your office and restart.",
+            debrief: "While 'Learn everything' is indeed unmeasurable, there is a much more fundamental issue with Marcus' actual learning methods. Look closely at how he plans to acquire this knowledge. In this case, a goal can be perfectly styled with SMART metrics, but a perfectly formatted bad execution model is still a bad plan."
+        },
+        endB2: {
+            title: "The Frustrated Pivot",
+            image: "https://lh3.googleusercontent.com/d/1UXga5-5PuvbOUshiYoDgLAiZr-8zvyKP", // Annoyed
+            scene: "Marcus stops typing, a clear look of annoyance passing over his face as he rubs his temples.",
+            dialogue: "Marcus: 'Wait... if the actual learning methods and the budget were the real issues, why did we just spend ten minutes wordsmithing the goal statement into a SMART format?'",
+            result: "You eventually guide him to the right conclusion, but because your diagnostic tracking was disjointed, the meeting feels clunky and inefficient. Marcus leaves feeling slightly micro-managed.",
+            debrief: "By not addressing the core issue (the methods and budget) right away, the meeting feels disjointed. You ultimately got to the right place, but lost some credibility as a coach."
+        },
+        endC1: {
+            title: "The Analysis Paralysis Delay",
+            image: "https://lh3.googleusercontent.com/d/1-Pt9KlertMQZiVuEc1Q3fhEkRAOsSxFY", // Overwhelmed
+            scene: "Marcus slowly closes his notebook, looking visibly overwhelmed by the task of designing a curriculum from scratch.",
+            dialogue: "Marcus: 'Okay... I'll try to think of some business projects that might fit, I guess. I'll put some time on your calendar when I have something.'",
+            result: "Because Marcus doesn't know the growth marketing landscape well yet, he struggles to identify viable on-the-job projects on his own. He misses his submission deadline.",
+            debrief: "Simply telling an employee to 'find a project' when they don't understand the skill yet leads to analysis paralysis. As a manager, you need to provide more scaffolding for beginners."
+        },
+        endC2: {
+            title: "The High-Impact, $0 Transformation",
+            image: "https://lh3.googleusercontent.com/d/1RBaq_EuTru7_h2Synj7lsJTPqbtvoflw", // Inspired/Excited
+            scene: "Marcus’s eyes light up, and he immediately flips to a clean page in his notebook to jot down notes.",
+            dialogue: "Marcus: 'Well... we are launching the Fall Campaign next month. I could ask our Lead Data Analyst to help me build a custom dashboard to track conversion rates for that campaign, and I can present the takeaways to the team after launch. That way, I'm actually doing the work, not just watching a presentation!'",
+            result: "Superb! By asking how he can apply the knowledge (Experience) and connect with colleagues (Exposure), you guided him to transform a passive, expensive goal into a highly active, high-impact plan that costs $0.",
+            debrief: "Excellent job! You correctly noted that Marcus's initial plan was 100% formal education and had zero experience or exposure. By providing a structured hybrid option, you balanced foundational education with immediate, measurable business value."
+        }
+    };
+
+    // DOM Elements
+    const titleEl = document.getElementById('frame-title');
+    const imageEl = document.getElementById('character-image');
+    const sceneEl = document.getElementById('scene-text');
+    const dialogueEl = document.getElementById('dialogue-text');
+    const choicesEl = document.getElementById('choices-container');
+    const debriefSection = document.getElementById('debrief-section');
+    const debriefText = document.getElementById('debrief-text');
+
+    // Logic to render a specific node
+    function goToNode(nodeId) {
+        const node = storyData[nodeId];
+        
+        // Populate text and IMAGE
+        titleEl.innerText = node.title;
+        imageEl.src = node.image; 
+        sceneEl.innerText = node.scene;
+        dialogueEl.innerText = node.dialogue;
+        
+        // Clear previous choices
+        choicesEl.innerHTML = '';
+        debriefSection.style.display = 'none';
+
+        // Check if it's an ending node
+        if (node.result) {
+            const resultPara = document.createElement('p');
+            resultPara.innerHTML = `<strong>Result:</strong> ${node.result}`;
+            choicesEl.appendChild(resultPara);
+
+            // Show debrief
+            debriefSection.style.display = 'block';
+            debriefText.innerHTML = `<p>${node.debrief}</p>`;
+        } else {
+            // Render choices for active frames
+            node.choices.forEach(choice => {
+                const btn = document.createElement('button');
+                btn.innerHTML = `<span class="action-text">${choice.action}</span> ${choice.text}`;
+                btn.onclick = () => goToNode(choice.target);
+                choicesEl.appendChild(btn);
+            });
+        }
+    }
+
+    // Initialize the game
+    function startGame() {
+        goToNode('start');
+    }
+
+    // Run on load
+    startGame();
+</script>
+
+</body>
+</html>
